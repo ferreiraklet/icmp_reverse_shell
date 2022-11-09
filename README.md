@@ -45,6 +45,8 @@ Be happy.
 
 ## References
 
-(ICMPSH)[https://github.com/bdamele/icmpsh]
-(ICMPSHELL)[https://github.com/sin5678/icmp_shell]
-(ICMPDOOR)[https://github.com/krabelize/icmpdoor]
+[ICMPSH](https://github.com/bdamele/icmpsh)
+
+[ICMPSHELL](https://github.com/sin5678/icmp_shell)
+
+[ICMPDOOR](https://github.com/krabelize/icmpdoor)
