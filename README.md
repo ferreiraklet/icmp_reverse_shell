@@ -11,12 +11,12 @@ FIrstly, compile it in your machine
 
 Attacker:
 ```bash
-gcc server.c -o server
+gcc server.c -o server -pthread
 ```
 
 Victim:
 ```bash
-gcc client.c -o client
+gcc client.c -o client -pthread
 ```
 
 #### To Run the Server:
