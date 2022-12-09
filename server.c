@@ -163,7 +163,9 @@ void *Recv(void *lparam){
                 sprintf(buffer, "%c%c%c%c%c", data[0], data[1], data[2],data[3],data[4]);
                 int result;
                 result = strcmp(buffer, "hello");
-                printf("%s", data);
+                if (strncmp(data, "n0xsh_ ", 6) != 0) {
+                  printf("%s", data);
+                }
                 
 
             }

